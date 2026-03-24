@@ -75,10 +75,7 @@ const makeHeaders = (apiKey, more) => {
     ...(apiKey && { "x-goog-api-key": apiKey }),
     ...more
   });
-  headers.delete('x-forwarded-for');
-  headers.delete('cf-connecting-ip');
-  headers.delete('true-client-ip');
-  headers.delete('x-real-ip');
+  headers.set('X-Forwarded-For', '8.8.8.8');
   return headers;
 };
 
