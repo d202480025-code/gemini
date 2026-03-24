@@ -69,11 +69,18 @@ const API_VERSION = "v1beta";
 
 // https://github.com/googleapis/js-genai/blob/main/src/_api_client.ts#L21
 const API_CLIENT = "google-genai-sdk/1.34.0"; // npm view @google/genai version
-const makeHeaders = (apiKey, more) => ({
-  "x-goog-api-client": API_CLIENT,
-  ...(apiKey && { "x-goog-api-key": apiKey }),
-  ...more
-});
+const makeHeaders = (apiKey, more) => {
+  const headers = new Headers({
+    "x-goog-api-client": API_CLIENT,
+    ...(apiKey && { "x-goog-api-key": apiKey }),
+    ...more
+  });
+  headers.delete('x-forwarded-for');
+  headers.delete('cf-connecting-ip');
+  headers.delete('true-client-ip');
+  headers.delete('x-real-ip');
+  return headers;
+};
 
 async function handleModels (apiKey) {
   const response = await fetch(`${BASE_URL}/${API_VERSION}/models`, {
