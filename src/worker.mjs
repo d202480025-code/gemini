@@ -76,12 +76,15 @@ const makeHeaders = (apiKey, more) => {
     ...more
   });
   headers.set('X-Forwarded-For', '8.8.8.8');
+  headers.set('cf-ipcountry', 'US');
   return headers;
 };
 
 async function handleModels (apiKey) {
   const response = await fetch(`${BASE_URL}/${API_VERSION}/models`, {
     headers: makeHeaders(apiKey),
+    redirect: "follow",
+    credentials: "omit"
   });
   let { body } = response;
   if (response.ok) {
@@ -128,7 +131,9 @@ async function handleEmbeddings (req, apiKey) {
         content: { parts: { text } },
         outputDimensionality: req.dimensions,
       }))
-    })
+    }),
+    redirect: "follow",
+    credentials: "omit"
   });
   let { body } = response;
   if (response.ok) {
@@ -190,6 +195,8 @@ async function handleCompletions (req, apiKey) {
     method: "POST",
     headers: makeHeaders(apiKey, { "Content-Type": "application/json" }),
     body: JSON.stringify(body),
+    redirect: "follow",
+    credentials: "omit"
   });
 
   body = response.body;
@@ -582,7 +589,7 @@ function transformCandidates (key, cand) {
       } else if (len) {
         message.content[len-1] += SEP;
       }
-      message.content.push(part.text);
+        message.content.push(part.text);
       if (thought_signature && part.thoughtSignature) {
         throw new Error("Unexpected multiple thoughtSignature");
       }
